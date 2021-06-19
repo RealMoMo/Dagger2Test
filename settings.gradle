@@ -1,0 +1,2 @@
+rootProject.name = "Dragger2Test"
+include ':app'
