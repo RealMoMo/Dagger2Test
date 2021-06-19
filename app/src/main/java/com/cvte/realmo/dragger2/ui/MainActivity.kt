@@ -7,22 +7,39 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.widget.TextViewCompat
 import com.cvte.realmo.dragger2.R
 import com.cvte.realmo.dragger2.di.DaggerMainComponent
+import com.cvte.realmo.dragger2.di.MainActivityModule
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var mainPresenter: MainPresenter
+    lateinit var tvHello: AppCompatTextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        DaggerMainComponent.builder().build().inject(this)
+
+        //presenter不需要持有activity的时候
+//        DaggerMainComponent.builder().build().inject(this)
 
 
-//        findViewById<AppCompatTextView>(R.id.tvHello)
-        findViewById<AppCompatTextView>(R.id.tvHello).setOnClickListener {
+        //当需要把自己提供出去的时候，请加相应的module
+        DaggerMainComponent.builder()
+            .mainActivityModule(MainActivityModule(this))
+            .build()
+            .inject(this)
+
+        tvHello = findViewById<AppCompatTextView>(R.id.tvHello)
+        tvHello.setOnClickListener {
             Toast.makeText(this, mainPresenter.getName(), Toast.LENGTH_SHORT).show()
+
+            mainPresenter.letViewShowData()
         }
+    }
+
+
+    fun showMsg(msg : String) {
+        tvHello.text =  msg
     }
 }
